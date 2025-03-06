@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+<body>
+
+    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+
+    <script>
+        // Sayfa yüklendiğinde AJAX isteği başlatılacak
+        window.onload = function () {
+            $.ajax({
+                type: 'GET',
+                url: '/Chart/ProductChart/', // Controller'dan gelen URL
+                success: function (chartsdata) {
+                    var labels = [];
+                    var values = [];
+                    var barColors = [
+                        "#b91d47", "#00aba9", "#2b5797",
+                        "#e8c3b9", "#1e7145"
+                    ];
+
+                    // AJAX yanıtından gelen veriyi işleyin
+                    chartsdata.jsonList.forEach(function (item, index) {
+                        labels.push(item.productname); // Ürün adları
+                        values.push(item.productvalue); // Ürün değerleri
+                    });
+
+                    // Chart.js grafiğini oluşturun
+                    new Chart("myChart", {
+                        type: "pie", // Grafik türü (pie - daire grafiği)
+                        data: {
+                            labels: labels, // Ürün isimleri etiket olarak
+                            datasets: [{
+                                backgroundColor: barColors, // Dilimlerin renkleri
+                                data: values // Ürün değerleri
+                            }]
+                        },
+                        options: {
+                            title: {
+                                display: true,
+                                text: "Ürün Üretim Grafikleri"
+                            }
+                        }
+                    });
+                },
+                error: function () {
+                    alert('Veri yüklenemedi!');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
